@@ -15,7 +15,7 @@ services:
       - SENTINEL_INTERVAL_SEC=60
       # Live Pi-hole Connection Secrets
       - PIHOLE_URL=http://192.168.1.188
-      - PIHOLE_API_TOKEN=PUT_YOUR_REAL_PASSWORD_HERE
+      - PIHOLE_API_TOKEN=${SECRET_PIHOLE_PW}
       - PIHOLE_VERSION=6
       # Scoring Math Calibration
       - WEIGHT_WIFI=0.45
