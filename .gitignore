@@ -1,0 +1,16 @@
+# Python environment templates
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# App-specific data and secrets
+.env
+*.db
+*.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
