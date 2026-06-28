@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Sentinel</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <style>
+        .score-banner { text-align: center; margin: 2rem 0; }
+        .score-number { font-size: 4.5rem; font-weight: bold; margin: 0; line-height: 1; }
+        .score-label { font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.7; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .card { padding: 1.5rem; border-radius: 8px; background: rgba(255,255,255,0.05); text-align: center; }
+        .card h3 { margin-top: 0; font-size: 1rem; opacity: 0.8; }
+        .card .val { font-size: 2rem; font-weight: bold; }
+        .alert-box { padding: 1rem 1.5rem; border-left: 4px solid #ffba00; background: rgba(255, 186, 0, 0.1); margin-bottom: 2rem; border-radius: 4px; }
+        .alert-box.perfect { border-left-color: #2ecc71; background: rgba(46, 204, 113, 0.1); }
+        
+        /* Clean color classes handled safely outside HTML tags */
+        .score-good { color: #2ecc71; }
+        .score-warn { color: #f1c40f; }
+        .score-bad  { color: #e74c3c; }
+
+        table { width: 100%; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <div class="score-banner">
+        <div class="score-label">System Health Score</div>
+        <div class="score-number {{ current.score_class }}">
+            {{ current.scores.general }}<span style="font-size: 2rem; opacity: 0.5;">/100</span>
+        </div>
+        <small>Last updated: {{ current.timestamp_str }}</small>
+    </div>
+
+    <div class="alert-box {% if current.scores.general == 100 %}perfect{% endif %}">
+        <strong>Sentinel Recommendations:</strong>
+        <ul>
+            {% for advice in current.suggestions %}
+                <li>{{ advice }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <h3>Wi-Fi & Router</h3>
+            <div class="val">{{ current.scores.wifi }}%</div>
+            <small>Ping: {{ current.raw.wifi.gateway.avg_ms|default(0) }}ms</small>
+        </div>
+        <div class="card">
+            <h3>Pi-hole DNS</h3>
+            <div class="val">{{ current.scores.pihole }}%</div>
+            <small>24h Queries: {{ current.raw.pihole.queries_24h|default(0) }}</small>
+        </div>
+        <div class="card">
+            <h3>Tailscale Mesh</h3>
+            <div class="val">{{ current.scores.tailscale }}%</div>
+            <small>Peers Online: {{ current.raw.tailscale.active_peers|default(0) }}</small>
+        </div>
+    </div>
+
+    <hr>
+
+    <h3>Recent Diagnostic Logs</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>General</th>
+                <th>Wi-Fi</th>
+                <th>Pi-hole</th>
+                <th>Tailscale</th>
+                <th>Primary Note</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in history %}
+            <tr>
+                <td>{{ log.time_str }}</td>
+                <td><strong>{{ log.general_score }}</strong></td>
+                <td>{{ log.wifi_score }}</td>
+                <td>{{ log.pihole_score }}</td>
+                <td>{{ log.tailscale_score }}</td>
+                <td>{{ log.suggestions[0] if log.suggestions else "Nominal" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>
