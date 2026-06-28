@@ -8,6 +8,7 @@ services:
     volumes:
       # Persist SQLite historical logs onto your server SSD
       - ./data:/app/data
+      - /var/run/tailscale/tailscaled.sock:/var/run/tailscale/tailscaled.sock:ro
     environment:
       - SENTINEL_PORT=5050
       - SENTINEL_GATEWAY_IP=192.168.1.1
